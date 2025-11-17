@@ -4,11 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Random;
 
-/**
- * ClientCapteur : se connecte au serveur localhost:5000 et envoie toutes les 3 secondes
- * un message au format texte : "CAPTEUR|temperature|23.5"
- * tourne indéfiniment jusqu'à interruption manuelle.
- */
+
 public class ClientCapteur {
     private static final String HOST = "localhost";
     private static final int PORT = 5000;
@@ -22,9 +18,7 @@ public class ClientCapteur {
 
             System.out.println("Connecté au serveur " + HOST + ":" + PORT);
 
-            // On n'attend pas d'OK ; on envoie immédiatement le premier identifiant "CAPTEUR"
-            // (la consigne indiquait que le serveur doit détecter dès la connexion si le client est CAPTEUR)
-            // Nous commençons en envoyant des messages CAPTEUR|type|valeur
+            
             while (true) {
                 // temperature
                 double temp = randomInRange(15.0, 35.0);
