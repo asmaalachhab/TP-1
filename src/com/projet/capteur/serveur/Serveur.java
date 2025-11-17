@@ -6,10 +6,6 @@ import java.net.Socket;
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Serveur principal qui écoute sur le port 5000 et gère chaque client dans un thread.
- * Il détecte le type de client (CAPTEUR ou SPECIAL) dès la première ligne.
- */
 public class Serveur {
     private static final int PORT = 5000;
 
@@ -27,9 +23,7 @@ public class Serveur {
         }
     }
 
-    /**
-     * Handler pour chaque client.
-     */
+  
     private static class ClientHandler implements Runnable {
         private final Socket socket;
         private BufferedReader in;
@@ -45,7 +39,6 @@ public class Serveur {
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 
-                // Lire la première ligne pour déterminer le type de client
                 String firstLine = in.readLine();
                 if (firstLine == null) {
                     closeAll();
@@ -67,15 +60,10 @@ public class Serveur {
             }
         }
 
-        /**
-         * Traitement d'un client capteur.
-         * Le format attendu pour chaque message est : CAPTEUR|type|valeur
-         */
+        
         private void handleCapteur(String firstLine) {
             System.out.println("Client capteur identifié: " + socket.getRemoteSocketAddress());
-            // Si la première ligne contient déjà une mesure, l'insérer aussi.
             try {
-                // Traiter la ligne initiale et ensuite lire en boucle
                 processCapteurMessage(firstLine);
 
                 String line;
@@ -88,12 +76,9 @@ public class Serveur {
             System.out.println("Client capteur déconnecté: " + socket.getRemoteSocketAddress());
         }
 
-        /**
-         * Insère en base le message CAPTEUR|type|valeur
-         */
+        
         private void processCapteurMessage(String msg) {
             if (msg == null) return;
-            // Exemples: CAPTEUR|temperature|23.5
             if (!msg.startsWith("CAPTEUR|")) {
                 System.err.println("Message capteur mal formé: " + msg);
                 return;
@@ -113,23 +98,19 @@ public class Serveur {
                 return;
             }
 
-            // Insérer dans la base
             String sql = "INSERT INTO mesures (type, valeur) VALUES (?, ?)";
             try (Connection conn = DBConnection.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, type);
                 ps.setDouble(2, valeur);
                 ps.executeUpdate();
-                // Optionnel : journaliser côté serveur
                 System.out.printf("Mesure insérée : type=%s valeur=%.3f%n", type, valeur);
             } catch (SQLException ex) {
                 System.err.println("Erreur insertion mesure: " + ex.getMessage());
             }
         }
 
-        /**
-         * Traitement d'un client spécial : menu interactif.
-         */
+       
         private void handleSpecial() {
             System.out.println("Client SPECIAL connecté: " + socket.getRemoteSocketAddress());
             out.println("OK"); // Accusé de réception
