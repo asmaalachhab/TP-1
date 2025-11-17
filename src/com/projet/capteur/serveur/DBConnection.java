@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DBConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/capteurs_db?serverTimezone=UTC&useSSL=false";
     private static final String USER = "root";
-    private static final String PASSWORD = "root"; // modifier si nécessaire
+    private static final String PASSWORD = "root"; 
 
     static {
         try {
